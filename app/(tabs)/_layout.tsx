@@ -8,7 +8,7 @@ import CustomTabBar from '../components/CustomTabBar';
 export default function TabLayout() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-      <CustomHeader />
+      <CustomHeader showMenuIcon={true} />
       <Tabs 
         screenOptions={{
           headerShown: false,
