@@ -123,6 +123,10 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
           console.log('Center + pressed');
           // Do something like open modal or navigate
         }}
+        android_ripple={{
+          foreground: true,
+          color: '#fffff'
+        }}
         style={{
           width: 100,
           height: 100,

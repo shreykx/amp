@@ -12,7 +12,7 @@ export default function LoginPage() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor : 'white' }}>
       {/* content */}
       <View style={{
         position: 'absolute',

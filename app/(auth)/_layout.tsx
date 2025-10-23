@@ -4,7 +4,7 @@ import CustomHeader from '../components/CustomHeader';
 
 export default function AuthLayout() {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor : 'white' }}>
       <CustomHeader />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="login" />
