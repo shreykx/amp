@@ -1,34 +1,66 @@
 import Feather from '@expo/vector-icons/Feather';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { useState } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
+
+type Question = {
+  id: string;
+  questionText: string;
+  summary: string | null;
+  numberOfResponses: number;
+  totalLikes: number;
+  totalDislikes: number;
+  authorHandle: string;
+};
 
 export default function HomePage() {
   // This is where your main app content will go
   // For now, it's just a placeholder
-  const [questions, setQuestions] = useState([
-    {
-      id: '0',
-      questionText: "What’s the best place to visit this summer?",
-      summary: null,
-      numberOfResponses: 12,
-      totalLikes: 2,
-      totalDislikes: 4,
-      authorHandle: 'shreykx',
-    },
-    {
-      id: '1',
-      questionText: "Should I propose her?",
-      summary: "Most people who responded think you should go for her—the overall consensus is very positive. Several commenters say you seem like a great match and encourage you to be confident and express your feelings. Some suggest considering what you know about her feelings, but overall, the advice is to take the leap and propose!",
-      numberOfResponses: 17,
-      totalLikes: 15,
-      totalDislikes: 2,
-      authorHandle: 'shreykx',
-    }
-  ])
-  const renderItem = ({ item }: { item: typeof questions[0] }) => (
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate data fetching with 2-second delay
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      setIsLoading(true);
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      
+      // Set the mock data
+      setQuestions([
+        {
+          id: '0',
+          questionText: "What's the best place to visit this summer?",
+          summary: null,
+          numberOfResponses: 12,
+          totalLikes: 2,
+          totalDislikes: 4,
+          authorHandle: 'shreykx',
+        },
+        {
+          id: '1',
+          questionText: "Should I propose her?",
+          summary: "Most people who responded think you should go for her—the overall consensus is very positive. Several commenters say you seem like a great match and encourage you to be confident and express your feelings. Some suggest considering what you know about her feelings, but overall, the advice is to take the leap and propose!",
+          numberOfResponses: 17,
+          totalLikes: 15,
+          totalDislikes: 2,
+          authorHandle: 'shreykx',
+        }
+      ]);
+      
+      setIsLoading(false);
+    };
+
+    fetchQuestions();
+  }, []);
+  const renderItem = ({ item }: { item: Question }) => (
     <View style={{
       width: '100%',
+      borderRadius: 15,
+      borderWidth: 1,
+      borderColor: '#e0e0e0',
+      overflow: 'hidden',
     }}>
       <View style={{
         flexDirection: 'row',
@@ -174,13 +206,25 @@ export default function HomePage() {
     </View>
   )
   return (
-    <View style={{ flex: 1, backgroundColor: 'white' }}>
+    <View style={{ flex: 1, backgroundColor: 'white', padding : 7 }}>
       {/* Main (home) screen */}
-      <FlatList
-        data={questions}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-      />
+      {isLoading ? (
+        <View style={{ 
+          flex: 1, 
+          justifyContent: 'center', 
+          alignItems: 'center' 
+        }}>
+          <ActivityIndicator size="large" color="#F75270" />
+        </View>
+      ) : (
+        <FlatList
+          data={questions}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+          contentContainerStyle={{ paddingVertical: 10 }}
+        />
+      )}
     </View>
   );
 }

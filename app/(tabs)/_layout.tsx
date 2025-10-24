@@ -1,13 +1,15 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
+import * as Haptics from 'expo-haptics';
 import { Tabs } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text } from 'react-native';
-import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from '../components/CustomHeader';
 import CustomTabBar from '../components/CustomTabBar';
 import MenuContainer from '../components/MenuContainer';
+import { useAuth } from '../contexts/AuthContext';
+
 
 // Menu item configuration type
 interface MenuItem {
@@ -19,44 +21,55 @@ interface MenuItem {
   isCloseButton?: boolean;
 }
 
-// Menu items configuration
-const menuItems: MenuItem[] = [
-  {
-    id: 'about',
-    title: 'About this app',
-    textColor: '#2445C9',
-    onPress: () => {
-      // Add your about functionality here
-      console.log('About pressed');
-    },
-    showBorder: true,
-  },
-  {
-    id: 'account',
-    title: 'Your Account',
-    textColor: '#2445C9',
-    onPress: () => {
-      // Add your account functionality here
-      console.log('Account pressed');
-    },
-    showBorder: true,
-  },
-  {
-    id: 'close',
-    title: 'Close',
-    textColor: '#F75270',
-    onPress: () => {
-      // Close menu functionality
-      console.log('Close pressed');
-    },
-    showBorder: false,
-    isCloseButton: true,
-  },
-];
-
 export default function TabLayout() {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const { logout } = useAuth();
+  const handleLogout = () => {
+    logout();
+  };
 
+  // Menu items configuration
+  const menuItems: MenuItem[] = [
+    {
+      id: 'about',
+      title: 'About this app',
+      textColor: '#2445C9',
+      onPress: () => {
+        // Add your about functionality here
+        console.log('About pressed');
+      },
+      showBorder: true,
+    },
+    {
+      id: 'account',
+      title: 'Your Account',
+      textColor: '#2445C9',
+      onPress: () => {
+        // Add your account functionality here
+        console.log('Account pressed');
+      },
+      showBorder: true,
+    },
+    {
+      id: 'logout',
+      title: 'Logout',
+      textColor: '#F75270',
+      onPress: handleLogout,
+      showBorder: true,
+      isCloseButton: false,
+    },
+    {
+      id: 'close',
+      title: 'Close',
+      textColor: '#F75270',
+      onPress: () => {
+        // Close menu functionality
+        console.log('Close pressed');
+      },
+      showBorder: false,
+      isCloseButton: true,
+    },
+  ];
   // Handle menu item press
   const handleMenuItemPress = (item: MenuItem) => {
     if (item.isCloseButton) {
@@ -130,7 +143,7 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-      <MenuContainer isVisible={isMenuVisible}>
+      <MenuContainer isVisible={isMenuVisible} setIsVisible={setIsMenuVisible}>
         {renderMenuItems()}
       </MenuContainer>
     </SafeAreaView>
