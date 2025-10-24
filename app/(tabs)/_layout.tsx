@@ -1,7 +1,7 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
 import * as Haptics from 'expo-haptics';
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -24,6 +24,8 @@ interface MenuItem {
 export default function TabLayout() {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const { logout } = useAuth();
+  const router = useRouter();
+  
   const handleLogout = () => {
     logout();
   };
@@ -35,8 +37,6 @@ export default function TabLayout() {
       title: 'About this app',
       textColor: '#2445C9',
       onPress: () => {
-        // Add your about functionality here
-        console.log('About pressed');
       },
       showBorder: true,
     },
@@ -45,8 +45,8 @@ export default function TabLayout() {
       title: 'Your Account',
       textColor: '#2445C9',
       onPress: () => {
-        // Add your account functionality here
-        console.log('Account pressed');
+        setIsMenuVisible(false);
+        router.push('/account');
       },
       showBorder: true,
     },
@@ -63,8 +63,6 @@ export default function TabLayout() {
       title: 'Close',
       textColor: '#F75270',
       onPress: () => {
-        // Close menu functionality
-        console.log('Close pressed');
       },
       showBorder: false,
       isCloseButton: true,

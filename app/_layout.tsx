@@ -1,4 +1,5 @@
-import { Poppins_400Regular, Poppins_700Bold, Poppins_600SemiBold, useFonts } from '@expo-google-fonts/poppins';
+import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold, useFonts } from '@expo-google-fonts/poppins';
+import { ZenDots_400Regular } from '@expo-google-fonts/zen-dots';
 import { Stack } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
@@ -11,7 +12,8 @@ export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
     Poppins_700Bold,
-    Poppins_600SemiBold
+    Poppins_600SemiBold,
+    ZenDots_400Regular,
   });
 
   useEffect(() => {

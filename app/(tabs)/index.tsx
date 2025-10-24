@@ -2,6 +2,7 @@ import Feather from '@expo/vector-icons/Feather';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 type Question = {
   id: string;
@@ -18,14 +19,20 @@ export default function HomePage() {
   // For now, it's just a placeholder
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  // Handling animations
+  const translateY = useSharedValue(50)
+  const opacity = useSharedValue(0)
+  const animatedQuestionCardStyle = useAnimatedStyle(()=> ({
+    transform: [{ translateY: translateY.value }],
+    opacity: opacity.value
+  }))
   // Simulate data fetching with 2-second delay
   useEffect(() => {
     const fetchQuestions = async () => {
       setIsLoading(true);
       
       // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Set the mock data
       setQuestions([
@@ -50,18 +57,22 @@ export default function HomePage() {
       ]);
       
       setIsLoading(false);
+      
+      // Trigger slide-up animation when questions are loaded
+      translateY.value = withTiming(0, { duration: 300 });
+      opacity.value = withTiming(1, { duration: 300 });
     };
 
     fetchQuestions();
   }, []);
   const renderItem = ({ item }: { item: Question }) => (
-    <View style={{
+    <Animated.View style={[{
       width: '100%',
       borderRadius: 15,
       borderWidth: 1,
       borderColor: '#e0e0e0',
       overflow: 'hidden',
-    }}>
+    }, animatedQuestionCardStyle]}>
       <View style={{
         flexDirection: 'row',
         padding: 20
@@ -71,6 +82,13 @@ export default function HomePage() {
           fontSize: 25,
           width: '80%'
         }}>{item.questionText}</Text>
+        {/* Example of using Zen Dots font:
+        <Text style={{
+          ,
+          fontSize: 20,
+          color: '#F75270'
+        }}>Zen Dots Text</Text>
+        */}
         <Pressable style={{
           // backgroundColor : 'black',
           width: '20%',
@@ -174,7 +192,7 @@ export default function HomePage() {
           }}>
             <Text style={{
               fontSize: 24,
-              fontFamily: 'Poppins_400Regular',
+              fontFamily: 'Poppins_600SemiBold',
               lineHeight: 27,
               color: '#F75270',
             }}>{item.summary}</Text>
@@ -203,7 +221,7 @@ export default function HomePage() {
           </Pressable>
         </View>
       )}
-    </View>
+    </Animated.View>
   )
   return (
     <View style={{ flex: 1, backgroundColor: 'white', padding : 7 }}>

@@ -22,7 +22,7 @@ export default function LoginPage() {
         width: '100%',
         alignContent: 'center',
         paddingHorizontal: 10,
-        alignItems: 'center'
+        alignItems: 'center',
       }}>
         <Pressable
           android_ripple={{
@@ -38,7 +38,8 @@ export default function LoginPage() {
             alignItems: 'center',
             flexDirection: 'row',
             justifyContent: 'center',
-            alignContent: 'center'
+            alignContent: 'center',
+            borderRadius : 100
           }}>
           <Image
             source={require('../../assets/images/google-icon-white.png')}

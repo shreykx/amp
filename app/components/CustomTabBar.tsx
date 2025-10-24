@@ -3,7 +3,9 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import * as Haptics from 'expo-haptics';
 import React from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 export default function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+  const router = useRouter()
   const handleTabPress = (route: any, isFocused: boolean) => {
     const event = navigation.emit({
       type: 'tabPress',
@@ -120,7 +122,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
       <Pressable
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
-          console.log('Center + pressed');
+          router.push("/core/create")
           // Do something like open modal or navigate
         }}
         android_ripple={{
@@ -138,7 +140,6 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
       >
         <AntDesign name="plus" size={42} color="white" />
       </Pressable>
-
       {/* Right side tabs */}
       <View style={{ flex: 1, flexDirection: 'row' }}>
         {rightRoutes.map((route, index) => renderTab(route, index, false))}

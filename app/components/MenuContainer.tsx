@@ -10,7 +10,7 @@ export default function MenuContainer({ children, isVisible = false, setIsVisibl
         // Slide up: animate from 0 to 1
         Animated.timing(slideAnimation, {
             toValue: 1,
-            duration: 300,
+            duration: 100,
             useNativeDriver: true,
         }).start();
     } else {
