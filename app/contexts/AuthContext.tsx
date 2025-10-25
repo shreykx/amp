@@ -1,10 +1,20 @@
 import { router } from 'expo-router';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
+interface User {
+  email: string;
+  name: string | null;
+  givenName: string | null;
+  familyName: string | null;
+  id: string;
+  photo: string | null;
+}
+
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: () => void;
+  user: User | null;
+  login: (userData: User) => void;
   logout: () => void;
 }
 
@@ -13,6 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     // Check for existing authentication state
@@ -34,18 +45,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = () => {
+  const login = (userData: User) => {
+    setUser(userData);
     setIsAuthenticated(true);
     router.replace('/(tabs)' as any);
   };
 
   const logout = () => {
+    setUser(null);
     setIsAuthenticated(false);
     router.replace('/(auth)/login' as any);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isLoading, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

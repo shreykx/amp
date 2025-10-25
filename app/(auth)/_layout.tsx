@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from '../components/CustomHeader';
-
+import { StatusBar } from 'expo-status-bar';
 export default function AuthLayout() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor : 'white' }}>
@@ -9,6 +9,7 @@ export default function AuthLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="login" />
       </Stack>
+      <StatusBar style="dark" />
     </SafeAreaView>
   );
 }

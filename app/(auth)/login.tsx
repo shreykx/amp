@@ -1,18 +1,89 @@
-import React from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Alert, Image, Pressable, Text, View } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
+// Google SignIn
+
+import {
+  GoogleSignin,
+  isErrorWithCode,
+  isSuccessResponse,
+  statusCodes
+} from '@react-native-google-signin/google-signin';
+
+
+GoogleSignin.configure({
+  webClientId: '987212091263-ucek3p39n5p8mpl0m6bs1he9l7fhhb6m.apps.googleusercontent.com', // client ID of type WEB for your server. Required to get the `idToken` on the user object, and for offline access.
+  scopes: [
+    /* what APIs you want to access on behalf of the user, default is email and profile
+    this is just an example, most likely you don't need this option at all! */
+    'https://www.googleapis.com/auth/drive.readonly',
+  ],
+  offlineAccess: false, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+  hostedDomain: '', // specifies a hosted domain restriction
+  forceCodeForRefreshToken: false, // [Android] related to `serverAuthCode`, read the docs link below *.
+  accountName: '', // [Android] specifies an account name on the device that should be used
+  iosClientId: '<FROM DEVELOPER CONSOLE>', // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
+  googleServicePlistPath: '', // [iOS] if you renamed your GoogleService-Info file, new name here, e.g. "GoogleService-Info-Staging"
+  openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
+  profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
+});
+
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleGoogleLogin = () => {
-    // TODO: Implement Google authentication
-    // For now, just call the login function
-    login();
+  const handleGoogleLogin = async () => {
+    try {
+      setIsLoading(true);
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+      
+      if (isSuccessResponse(response)) {
+        const userData = response.data.user;
+        console.log('Google Sign-In successful:', userData);
+        
+        // Call the AuthContext login method with user data
+        login(userData);
+      } else {
+        console.warn("Sign In was cancelled by the user.")
+      }
+
+    } catch (error) {
+      if (isErrorWithCode(error)) {
+        switch (error.code) {
+          case statusCodes.IN_PROGRESS:
+            // operation (eg. sign in) already in progress
+            Alert.alert("Sign in is in progress.")
+            break;
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            // Android only, play services not available or outdated
+            Alert.alert("Play services not available.")
+            break;
+          default:
+            console.log("Error", error)
+            Alert.alert("Sign in failed", "Please try again.")
+          // some other error happened
+        }
+      } else {
+        // an error that's not related to google sign in occurred
+        console.log("Error", error);
+        Alert.alert("An error occurred during sign in.")
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const signOut = async () => {
+    try {
+      await GoogleSignin.signOut();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor : 'white' }}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       {/* content */}
       <View style={{
         position: 'absolute',
@@ -30,16 +101,17 @@ export default function LoginPage() {
             color: '#fffff'
           }}
           onPress={handleGoogleLogin}
+          disabled={isLoading}
           style={{
             paddingVertical: 20,
             paddingHorizontal: 20,
-            backgroundColor: "#F75270",
+            backgroundColor: isLoading ? "#ccc" : "#F75270",
             width: '95%',
             alignItems: 'center',
             flexDirection: 'row',
             justifyContent: 'center',
             alignContent: 'center',
-            borderRadius : 100
+            borderRadius: 100
           }}>
           <Image
             source={require('../../assets/images/google-icon-white.png')}
@@ -50,7 +122,7 @@ export default function LoginPage() {
             color: 'white',
             fontSize: 21,
             fontFamily: "Poppins_700Bold"
-          }}>Continue with Google</Text>
+          }}>{isLoading ? "Signing in..." : "Continue with Google"}</Text>
         </Pressable>
       </View>
     </View>

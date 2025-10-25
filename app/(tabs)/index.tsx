@@ -3,6 +3,8 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { useAuth } from '../contexts/AuthContext';
+import { StatusBar } from "expo-status-bar";
 
 type Question = {
   id: string;
@@ -17,6 +19,7 @@ type Question = {
 export default function HomePage() {
   // This is where your main app content will go
   // For now, it's just a placeholder
+  const { user, logout } = useAuth();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   // Handling animations
@@ -225,6 +228,9 @@ export default function HomePage() {
   )
   return (
     <View style={{ flex: 1, backgroundColor: 'white', padding : 7 }}>
+      {/* User Info Section */}
+      
+      
       {/* Main (home) screen */}
       {isLoading ? (
         <View style={{ 
@@ -243,6 +249,7 @@ export default function HomePage() {
           contentContainerStyle={{ paddingVertical: 10 }}
         />
       )}
+    <StatusBar style="dark" />
     </View>
   );
 }
