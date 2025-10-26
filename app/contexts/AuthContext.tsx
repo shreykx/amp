@@ -1,14 +1,7 @@
 import { router } from 'expo-router';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-
-interface User {
-  email: string;
-  name: string | null;
-  givenName: string | null;
-  familyName: string | null;
-  id: string;
-  photo: string | null;
-}
+import { supabase } from '@/utils/supabase';
+import {User} from '@supabase/supabase-js';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -20,14 +13,13 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Check for existing authentication state
-    // This could be checking AsyncStorage, SecureStore, or your auth service
     checkAuthState();
   }, []);
 
@@ -35,9 +27,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // TODO: Implement actual auth state check
       // For now, we'll simulate a check
+      const {data : {session}} = await supabase.auth.getSession()
+      if (session?.user) {
+        setUser(session.user)
+        setIsAuthenticated(true)
+      } else {
+        setIsAuthenticated(false);
+      }
       setIsLoading(false);
-      // Default to showing auth screen
-      setIsAuthenticated(false);
     } catch (error) {
       console.error('Error checking auth state:', error);
       setIsLoading(false);

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Alert, Image, Pressable, Text, View } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 // Google SignIn
+import { signInWithGoogle } from '@/utils/supabase';
 
 import {
   GoogleSignin,
@@ -12,19 +13,12 @@ import {
 
 
 GoogleSignin.configure({
-  webClientId: '987212091263-ucek3p39n5p8mpl0m6bs1he9l7fhhb6m.apps.googleusercontent.com', // client ID of type WEB for your server. Required to get the `idToken` on the user object, and for offline access.
+  webClientId: '987212091263-mnd36kt7pi6ie957qd548caj4lk76iml.apps.googleusercontent.com', // client ID of type WEB for your server. Required to get the `idToken` on the user object, and for offline access.
   scopes: [
     /* what APIs you want to access on behalf of the user, default is email and profile
     this is just an example, most likely you don't need this option at all! */
     'https://www.googleapis.com/auth/drive.readonly',
   ],
-  offlineAccess: false, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-  hostedDomain: '', // specifies a hosted domain restriction
-  forceCodeForRefreshToken: false, // [Android] related to `serverAuthCode`, read the docs link below *.
-  accountName: '', // [Android] specifies an account name on the device that should be used
-  iosClientId: '<FROM DEVELOPER CONSOLE>', // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
-  googleServicePlistPath: '', // [iOS] if you renamed your GoogleService-Info file, new name here, e.g. "GoogleService-Info-Staging"
-  openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
   profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
 });
 
@@ -43,8 +37,14 @@ export default function LoginPage() {
         const userData = response.data.user;
         console.log('Google Sign-In successful:', userData);
         
-        // Call the AuthContext login method with user data
-        login(userData);
+        const idToken = response.data.idToken;
+        
+        if (!idToken) {
+          throw new Error("No Google ID token returned");
+        }
+        const user = await signInWithGoogle(idToken)
+
+        login(user)
       } else {
         console.warn("Sign In was cancelled by the user.")
       }
