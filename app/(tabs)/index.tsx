@@ -50,8 +50,8 @@ export default function HomePage() {
         },
         {
           id: '1',
-          questionText: "Should I propose her?",
-          summary: "Most people who responded think you should go for her—the overall consensus is very positive. Several commenters say you seem like a great match and encourage you to be confident and express your feelings. Some suggest considering what you know about her feelings, but overall, the advice is to take the leap and propose!",
+          questionText: "Which season of Stranger Things is your favorite?",
+          summary: "The responses are pretty evenly split between Season 1 and Season 4. Fans of Season 1 love the nostalgia and the tight, focused storyline of the original. Those who prefer Season 4 praise its darker themes, the introduction of Vecna, and the character development, especially for Max and Steve. Seasons 2 and 3 have their fans, but they're not as frequently mentioned as the best.",
           numberOfResponses: 17,
           totalLikes: 15,
           totalDislikes: 2,

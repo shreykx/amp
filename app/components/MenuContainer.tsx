@@ -1,52 +1,46 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useContext } from 'react';
 import { Animated, Pressable } from 'react-native';
+import { MenuContext } from '../contexts/MenuContext';
 
-export default function MenuContainer({ children, isVisible = false, setIsVisible }: { children?: React.ReactNode; isVisible?: boolean; setIsVisible?: (visible: boolean) => void }) {
+export default function MenuContainer({ children }: { children?: React.ReactNode; isVisible?: boolean; setIsVisible?: (visible: boolean) => void }) {
     // Create an animated value that starts at 0 (hidden)
     const slideAnimation = useRef(new Animated.Value(0)).current;
+    const { isMenuVisible, setIsMenuVisible } = useContext(MenuContext);
 
-    // Simple animation trigger - no useEffect needed!
-    if (isVisible) {
-        // Slide up: animate from 0 to 1
+
+    useEffect(() => {
         Animated.timing(slideAnimation, {
-            toValue: 1,
-            duration: 100,
+            toValue: isMenuVisible ? 1 : 0,
+            duration: isMenuVisible ? 150 : 250,
             useNativeDriver: true,
         }).start();
-    } else {
-        // Slide down: animate from 1 to 0
-        Animated.timing(slideAnimation, {
-            toValue: 0,
-            duration: 250,
-            useNativeDriver: true,
-        }).start();
-    }
+    }, [isMenuVisible]);
 
     return (
         <Pressable
             style={{
-                position : 'absolute',
-                bottom : 0, left : 0, top : 0, right : 0,
-                backgroundColor : "rgba(0,0,0,0.4)",
-                width : '100%',
-                height : '110%',
-                display: isVisible ? 'flex' : 'none',
-                padding : 10,
-                alignItems : 'center',
+                position: 'absolute',
+                bottom: 0, left: 0, top: 0, right: 0,
+                backgroundColor: "rgba(0,0,0,0.4)",
+                width: '100%',
+                height: '110%',
+                display: isMenuVisible ? 'flex' : 'none',
+                padding: 10,
+                alignItems: 'center',
 
             }}
             onPress={() => {
-                if (setIsVisible) {
-                    setIsVisible(false);
+                if (setIsMenuVisible) {
+                    setIsMenuVisible(false);
                 }
             }}>
             <Animated.View style={{
                 position: 'absolute',
-                bottom: 40,
+                bottom: 120,
                 backgroundColor: 'white',
                 width: '100%',
-                borderRadius : 20,
-                overflow : 'hidden',
+                borderRadius: 20,
+                overflow: 'hidden',
                 borderWidth: 1,
                 borderColor: '#e0e0e0', // Light gray border
                 zIndex: 1000,

@@ -1,15 +1,17 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Image, Pressable, StyleSheet, View } from "react-native";
+import { MenuContext } from '../contexts/MenuContext';
+import { useContext } from 'react';
 
 interface CustomHeaderProps {
   showMenuIcon?: boolean;
   showBackButton?: boolean;
   onBackPress?: () => void;
-  onMenuPress?: () => void;
 }
 
-export default function CustomHeader({ showMenuIcon = false, showBackButton = false, onBackPress, onMenuPress }: CustomHeaderProps) {
+export default function CustomHeader({ showMenuIcon = false, showBackButton = false, onBackPress }: CustomHeaderProps) {
+  const { setIsMenuVisible } = useContext(MenuContext);
   return <View style={[styles.container, { borderBottomWidth: 1, borderBottomColor: '#e0e0e0' }]}>
     {showBackButton ? (
       <Pressable style={styles.backButton} onPress={onBackPress}>
@@ -24,7 +26,7 @@ export default function CustomHeader({ showMenuIcon = false, showBackButton = fa
       resizeMode="contain"
     />
     {showMenuIcon ? (
-      <Pressable style={styles.menuButton} onPress={onMenuPress}>
+      <Pressable style={styles.menuButton} onPress={() => setIsMenuVisible(true)}>
         <Ionicons name="ellipsis-horizontal-circle-outline" size={34} color="#333" />
       </Pressable>
     ) : (
