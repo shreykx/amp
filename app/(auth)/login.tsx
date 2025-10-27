@@ -35,7 +35,7 @@ export default function LoginPage() {
       
       if (isSuccessResponse(response)) {
         const userData = response.data.user;
-        console.log('Google Sign-In successful:', userData);
+        // console.log('Google Sign-In successful:', userData);
         
         const idToken = response.data.idToken;
         

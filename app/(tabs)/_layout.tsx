@@ -4,19 +4,10 @@ import { Tabs } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from '../components/CustomHeader';
 import CustomTabBar from '../components/CustomTabBar';
-import { GetUserRow } from '@/utils/funcs/User';
 import { useEffect } from 'react';
 
 export default function TabLayout() {
   useEffect(() => {
-    (async ()=> {
-      const {data, error, status} = await GetUserRow()
-      if (error) console.error(error)
-      console.log({ data, error, status })
-      if (!data || data.length===0) {
-
-      }
-    })()  
   }, [])
   
   

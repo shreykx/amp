@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/utils/supabase';
-import {User} from '@supabase/supabase-js';
+import { User } from '@supabase/supabase-js';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // TODO: Implement actual auth state check
       // For now, we'll simulate a check
-      const {data : {session}} = await supabase.auth.getSession()
+      const { data: { session } } = await supabase.auth.getSession()
       if (session?.user) {
         setUser(session.user)
         setIsAuthenticated(true)
@@ -48,10 +48,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.replace('/(tabs)' as any);
   };
 
-  const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
-    router.replace('/(auth)/login' as any);
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    } finally {
+      setUser(null);
+      setIsAuthenticated(false);
+      router.replace('/(auth)/login' as any);
+    }
   };
 
   return (

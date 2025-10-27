@@ -1,6 +1,6 @@
 import { supabase } from '../supabase';
 
-export async function GetUserRow() {
+export async function getUserData() {
     const { data, error, status } = await supabase
         .from("users")
         .select("*");
