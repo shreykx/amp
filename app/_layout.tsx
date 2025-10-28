@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { MenuProvider } from './contexts/MenuContext';
 import { UserProvider } from './contexts/UserContext';
+import { OnBoardingProvider } from './contexts/OnBoardingContext';
 import GlobalMenuLayout from './layout/GlobalMenuLayout';
 
 // Keep the splash screen visible while we fetch resources
@@ -35,15 +36,17 @@ export default function RootLayout() {
     <AuthProvider>
       <UserProvider>
         <MenuProvider>
-          <GlobalMenuLayout>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="core/create" options={{ headerShown: false }} />
-            </Stack>
-          </GlobalMenuLayout>
+          <OnBoardingProvider>
+            <GlobalMenuLayout>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="core/create" options={{ headerShown: false }} />
+              </Stack>
+            </GlobalMenuLayout>
+          </OnBoardingProvider>
         </MenuProvider>
       </UserProvider>
     </AuthProvider>
