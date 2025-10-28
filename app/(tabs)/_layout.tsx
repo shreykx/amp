@@ -1,14 +1,24 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
+import { useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from '../components/CustomHeader';
 import CustomTabBar from '../components/CustomTabBar';
-import { useEffect } from 'react';
+import { useUser } from '../contexts/UserContext';
 
 export default function TabLayout() {
+  const {user, initialized} = useUser()
+  const router = useRouter()
+
   useEffect(() => {
-  }, [])
+    if (initialized && (!user || (Array.isArray(user) && user.length === 0))) {
+      router.replace("/(onboarding)/flow");
+    }
+  }, [initialized, user]);
+
+  if (!initialized) return null;
+  if (!user || (Array.isArray(user) && user.length === 0)) return null;
   
   
   return (

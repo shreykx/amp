@@ -5,8 +5,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { MenuProvider } from './contexts/MenuContext';
-import GlobalMenuLayout from './layout/GlobalMenuLayout';
 import { UserProvider } from './contexts/UserContext';
+import GlobalMenuLayout from './layout/GlobalMenuLayout';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
