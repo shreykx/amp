@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction } from "react";
+import { useEffect, createContext, useState, useContext, ReactNode, Dispatch, SetStateAction } from "react";
 import { Alert } from "react-native";
 
 interface OnBoardingContextType {
@@ -11,6 +11,7 @@ interface OnBoardingContextType {
     setUserBio: Dispatch<SetStateAction<string>>;
     username: string;
     setUsername: Dispatch<SetStateAction<string>>;
+    totalSteps: number
 }
 
 const OnBoardingContext = createContext<OnBoardingContextType>({
@@ -23,6 +24,7 @@ const OnBoardingContext = createContext<OnBoardingContextType>({
     setUserBio: () => { },
     username: "",
     setUsername: () => { },
+    totalSteps: 0,
 });
 
 export function OnBoardingProvider({ children }: { children: ReactNode }) {
@@ -34,8 +36,6 @@ export function OnBoardingProvider({ children }: { children: ReactNode }) {
     const totalSteps = 3;
 
     const handleSubmit = () => {
-        console.log(step);
-
         console.log("Submitting:", { userBio, username });
     };
 
@@ -60,6 +60,12 @@ export function OnBoardingProvider({ children }: { children: ReactNode }) {
 
     const prevStep = () => setStep((s) => Math.max(0, s - 1));
 
+    useEffect(() => {
+        if (step === totalSteps - 1) setButtonText("Done");
+        else if (step === 0) setButtonText("Get Started!");
+        else setButtonText("Next");
+    }, [step]);
+
     return (
         <OnBoardingContext.Provider
             value={{
@@ -72,6 +78,7 @@ export function OnBoardingProvider({ children }: { children: ReactNode }) {
                 setUserBio,
                 username,
                 setUsername,
+                totalSteps
             }}
         >
             {children}
