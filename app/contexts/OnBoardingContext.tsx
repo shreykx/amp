@@ -1,5 +1,10 @@
 import { useEffect, createContext, useState, useContext, ReactNode, Dispatch, SetStateAction } from "react";
 import { Alert } from "react-native";
+import { insertUserData } from "@/utils/funcs/User";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
+import { useUser } from "./UserContext";
+import { getGoogleUserData } from "@/utils/funcs/Session";
 
 interface OnBoardingContextType {
     step: number;
@@ -11,7 +16,8 @@ interface OnBoardingContextType {
     setUserBio: Dispatch<SetStateAction<string>>;
     username: string;
     setUsername: Dispatch<SetStateAction<string>>;
-    totalSteps: number
+    totalSteps: number,
+    isActionButtonLoading: boolean,
 }
 
 const OnBoardingContext = createContext<OnBoardingContextType>({
@@ -25,6 +31,7 @@ const OnBoardingContext = createContext<OnBoardingContextType>({
     username: "",
     setUsername: () => { },
     totalSteps: 0,
+    isActionButtonLoading: false,
 });
 
 export function OnBoardingProvider({ children }: { children: ReactNode }) {
@@ -32,11 +39,48 @@ export function OnBoardingProvider({ children }: { children: ReactNode }) {
     const [buttonText, setButtonText] = useState("Next");
     const [userBio, setUserBio] = useState("");
     const [username, setUsername] = useState("");
+    const [isActionButtonLoading, setIsActionButtonLoading] = useState(false)
+    const router = useRouter()
+    const { refetchUser } = useUser()
 
     const totalSteps = 3;
 
-    const handleSubmit = () => {
-        console.log("Submitting:", { userBio, username });
+    const handleSubmit = async () => {
+        try {
+            setIsActionButtonLoading(true);
+
+            const { data, error, status } = await insertUserData({
+                bio: userBio,
+                username: username,
+            });
+
+            if (error) {
+                if (error.code === "23505") {
+                    if (error.message.includes("users_username_key")) {
+                        Alert.alert("Username already taken", "Please choose another one.");
+                    } else if (error.message.includes("users_email_key")) {
+                        Alert.alert("Welcome back", "We’ve restored your account.");
+                        await AsyncStorage.setItem("hasUser", "true");
+                        router.replace("/(tabs)");
+                    } else {
+                        Alert.alert("Duplicate entry", "Please check your inputs.");
+                    }
+                } else {
+                    console.error("Insert failed:", error);
+                    Alert.alert("Error", "Something went wrong while saving your data.");
+                }
+                return;
+            }
+
+            if (status === 201) {
+                const googleUserData = await getGoogleUserData();
+                await refetchUser(googleUserData?.id);
+                await AsyncStorage.setItem("hasUser", "true");
+                router.replace("/(tabs)");
+            }
+        } finally {
+            setIsActionButtonLoading(false);
+        }
     };
 
     const nextStep = () => {
@@ -78,7 +122,8 @@ export function OnBoardingProvider({ children }: { children: ReactNode }) {
                 setUserBio,
                 username,
                 setUsername,
-                totalSteps
+                totalSteps,
+                isActionButtonLoading
             }}
         >
             {children}

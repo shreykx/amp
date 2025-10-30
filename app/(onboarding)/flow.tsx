@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { View, Text, Pressable, TextInput } from "react-native";
 import * as Haptics from 'expo-haptics';
 import { useOnBoarding } from "../contexts/OnBoardingContext";
+import { ActivityIndicator } from "react-native";
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -9,7 +10,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 export default function Flow() {
-    const { nextStep, buttonText } = useOnBoarding()
+    const { nextStep, buttonText, isActionButtonLoading } = useOnBoarding()
 
     return (<View style={{ flex: 1, backgroundColor: 'white' }}>
         <AnimatedStepsScreen />
@@ -25,6 +26,7 @@ export default function Flow() {
                 overflow: 'hidden'
             }}>
                 <Pressable
+                    disabled={isActionButtonLoading}
                     onPress={() => {
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
                         nextStep();
@@ -36,14 +38,20 @@ export default function Flow() {
                     style={{
                         backgroundColor: "#F75270",
                         alignItems: 'center',
-                        padding: 20,
+                        padding: isActionButtonLoading ? 10 : 20,
+                        opacity: isActionButtonLoading ? 0.5 : 1,
                     }}>
-                    <Text style={{
-                        color: 'white',
-                        fontFamily: 'Poppins_700Bold',
-                        includeFontPadding: false,
-                        fontSize: 25,
-                    }}>{buttonText}</Text>
+
+                    {isActionButtonLoading ? (
+                        <ActivityIndicator size={55} color="white" />
+                    ) : (
+                        <Text style={{
+                            color: 'white',
+                            fontFamily: 'Poppins_700Bold',
+                            includeFontPadding: false,
+                            fontSize: 25,
+                        }}>{buttonText}</Text>
+                    )}
                 </Pressable>
             </View>
         </View>
@@ -75,7 +83,7 @@ function AnimatedStepsScreen() {
 }
 
 function StepsScreen() {
-    const { step, userBio, setUserBio, username, setUsername, totalSteps } = useOnBoarding()
+    const { step, userBio, setUserBio, username, setUsername, totalSteps, isActionButtonLoading } = useOnBoarding()
 
     if (step === 0)
         return (<View style={{
@@ -146,6 +154,7 @@ function StepsScreen() {
                 placeholder="Just a guy."
                 placeholderTextColor="#888"
                 multiline
+                maxLength={150}
                 textAlignVertical="top"
                 numberOfLines={30}
                 style={{

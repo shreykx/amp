@@ -10,34 +10,41 @@ interface UserContextType {
     user: UserType;
     setUser: Dispatch<SetStateAction<UserType>>;
     initialized : boolean;
+    refetchUser: (userId?: string) => Promise<void>;
+
 }
 
 const UserContext = createContext<UserContextType>({
     user: null,
     setUser: () => { },
     initialized : false,
+    refetchUser: async () => {},
 });
 
 export function UserProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<UserType>(null);
     const [initialized, setInitialized] = useState(false)
-    useEffect(() => {
-        const fetchUser = async (userId?: string) => {
-            if (!userId) {
-                setUser(null);
-                setInitialized(true)
-                await AsyncStorage.setItem("hasUser", "false")
-                return;
-            }
-            const userData = await getUserData();
-            const data = userData?.data ?? null
-
-
-            console.log("Fetched user data:", data);
-            setUser(data ?? null);
+    const fetchUser = async (userId?: string) => {
+        if (!userId) {
+            console.log("No userId, setting user to null");
+            
+            setUser(null);
             setInitialized(true)
-            await AsyncStorage.setItem("hasUser", data ? "true" : "false")
-        };
+            await AsyncStorage.setItem("hasUser", "false")
+            return;
+        }
+        const userData = await getUserData();
+        console.log(userData);
+                    
+        const data = userData?.data?.[0] ?? null;
+
+
+        console.log("Fetched user data:", data);
+        setUser(data ?? null);
+        setInitialized(true)
+        await AsyncStorage.setItem("hasUser", data ? "true" : "false")
+    };
+    useEffect(() => {
         const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
             fetchUser(session?.user?.id);
         });
@@ -45,7 +52,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }, []);
 
     return (
-        <UserContext.Provider value={{ user, setUser, initialized }}>
+        <UserContext.Provider value={{ user, setUser, initialized, refetchUser: fetchUser }}>
             {children}
         </UserContext.Provider>
     );

@@ -1,25 +1,35 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
 import { Tabs, useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from '../components/CustomHeader';
 import CustomTabBar from '../components/CustomTabBar';
 import { useUser } from '../contexts/UserContext';
+import { ActivityIndicator } from 'react-native';
+import { getGoogleUserData } from '@/utils/funcs/Session';
 
 export default function TabLayout() {
   const {user, initialized} = useUser()
   const router = useRouter()
+  const redirecting = useRef(false);
 
   useEffect(() => {
-    if (initialized && (!user || (Array.isArray(user) && user.length === 0))) {
+    if (initialized && !user && !redirecting.current) {
+      redirecting.current = true;
+      console.log("User we're gettin: ", user);
+      
       router.replace("/(onboarding)/flow");
     }
   }, [initialized, user]);
 
-  if (!initialized) return null;
-  if (!user || (Array.isArray(user) && user.length === 0)) return null;
-  
+  if (!initialized || !user) {
+    return (
+      <SafeAreaView style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size={65} color="#F75270" />
+      </SafeAreaView>
+    );
+  }
   
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
