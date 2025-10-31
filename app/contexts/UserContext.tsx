@@ -2,6 +2,8 @@ import { createContext, useState, useEffect, useContext, ReactNode, Dispatch, Se
 import { getUserData } from "@/utils/funcs/User";
 import { supabase } from "@/utils/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "./AuthContext";
+import { router } from "expo-router";
 
 // Define the type for user, you may want to replace 'any' with a more specific type if known
 type UserType = any | null;
@@ -26,20 +28,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const [initialized, setInitialized] = useState(false)
     const fetchUser = async (userId?: string) => {
         if (!userId) {
-            console.log("No userId, setting user to null");
-            
-            setUser(null);
             setInitialized(true)
-            await AsyncStorage.setItem("hasUser", "false")
             return;
         }
         const userData = await getUserData();
-        console.log(userData);
                     
         const data = userData?.data?.[0] ?? null;
 
 
-        console.log("Fetched user data:", data);
         setUser(data ?? null);
         setInitialized(true)
         await AsyncStorage.setItem("hasUser", data ? "true" : "false")

@@ -25,8 +25,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuthState = async () => {
     try {
-      // TODO: Implement actual auth state check
-      // For now, we'll simulate a check
       const { data: { session } } = await supabase.auth.getSession()
       if (session?.user) {
         setUser(session.user)
@@ -34,11 +32,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setIsAuthenticated(false);
       }
-      setIsLoading(false);
     } catch (error) {
       console.error('Error checking auth state:', error);
-      setIsLoading(false);
       setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -54,7 +52,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Error signing out:', error);
     } finally {
-      setUser(null);
       setIsAuthenticated(false);
       router.replace('/(auth)/login' as any);
     }

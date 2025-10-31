@@ -16,9 +16,7 @@ export default function TabLayout() {
 
   useEffect(() => {
     if (initialized && !user && !redirecting.current) {
-      redirecting.current = true;
-      console.log("User we're gettin: ", user);
-      
+      redirecting.current = true;      
       router.replace("/(onboarding)/flow");
     }
   }, [initialized, user]);

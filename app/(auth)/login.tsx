@@ -74,13 +74,6 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
-  const signOut = async () => {
-    try {
-      await GoogleSignin.signOut();
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>

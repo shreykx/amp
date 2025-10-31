@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 export default function AuthLayout() {
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex : 1, backgroundColor : 'white'}}>
       <View style={{ flex: 1, backgroundColor: 'white' }}>
         <CustomHeader />
         <Stack screenOptions={{ headerShown: false }}>
