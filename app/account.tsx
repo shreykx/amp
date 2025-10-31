@@ -1,12 +1,12 @@
+import Feather from '@expo/vector-icons/Feather';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Text, View, Pressable, Image } from 'react-native';
+import { Image, Pressable, Text, TextInput, View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from './components/CustomHeader';
-import { Tabs, useRouter } from 'expo-router';
 import { useAuth } from './contexts/AuthContext';
 import { useUser } from './contexts/UserContext';
-import Feather from '@expo/vector-icons/Feather';
-import MenuContainer from './components/MenuContainer';
+
 
 export default function AccountPage() {
   const { user, logout } = useAuth()
@@ -14,6 +14,7 @@ export default function AccountPage() {
   const avatarUrl = user?.user_metadata?.avatar_url;
   const router = useRouter();
   const [isBuyModalVisible, setIsBuyModalVisible] = useState(true);
+  const [summariesQuantity, setSummariesQuantity] = useState(0);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <CustomHeader showBackButton={true} onBackPress={() => router.back()} showMenuIcon={true} />
@@ -80,6 +81,9 @@ export default function AccountPage() {
         }}>{profile?.bio}</Text>
       </View>
       <Pressable
+        onPress={() => {
+          setIsBuyModalVisible(true);
+        }}
         android_ripple={{
           foreground: true,
           color: '#F75270',
@@ -118,9 +122,135 @@ export default function AccountPage() {
         }}>You get 1 free summary per question. Click above to get
           more summaries!</Text>
       </View>
-      <MenuContainer isVisible={isBuyModalVisible}>
-        <Text>Hello Universe!</Text>
-      </MenuContainer>
+      {isBuyModalVisible && (
+        <Pressable
+          onPress={() => setIsBuyModalVisible(false)}
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.2)',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            justifyContent: 'flex-end',
+          }}
+        >
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          >
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+            >
+
+              <View style={{
+                paddingVertical: 20,
+                backgroundColor: "white",
+                flexDirection: "column",
+                gap: 16,
+              }}>
+                <View style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 5,
+                  paddingHorizontal: 20,
+                }}>
+                  <Text style={{
+                    fontFamily: 'Poppins_600SemiBold',
+                    fontSize: 31,
+                    includeFontPadding: false
+                  }}>Buy Summaries</Text>
+                  <Pressable onPress={() => {
+                    setIsBuyModalVisible(false);
+                  }}>
+                    <Feather name="x" size={24} color="#1C1B1F" />
+                  </Pressable>
+                </View>
+                <View style={{
+                  paddingHorizontal: 20,
+                  gap: 40,
+                  paddingBottom: 20,
+                }}>
+                  <Text style={{
+                    fontFamily: 'Poppins_400Regular',
+                    fontSize: 12,
+                    includeFontPadding: false,
+                    color: "#1C1B1F",
+                  }}>You can use these summaries on any question you create. The free summary will always remain as it is.</Text>
+                  <TextInput
+                    value={summariesQuantity === 0 ? '' : summariesQuantity.toString()}
+                    keyboardType="numeric"
+                    maxLength={5}
+                    onChangeText={(text) => {
+                      // Only allow numbers and empty string
+                      if (text === '') {
+                        setSummariesQuantity(0);
+                        return;
+                      }
+
+                      if (!/^\d+$/.test(text)) return;
+
+                      const numValue = parseInt(text, 10);
+                      if (numValue > 10000) return;
+
+                      setSummariesQuantity(numValue);
+                    }}
+                    placeholderTextColor="#9E9E9E"
+                    style={{
+                      borderWidth: 1,
+                      borderColor: '#000000',
+                      borderRadius: 10,
+                      padding: 16,
+                      fontFamily: 'Poppins_400Regular',
+                      fontSize: 24,
+                      includeFontPadding: false,
+                      color: '#1C1B1F',
+                    }}
+                    returnKeyType="done"
+                  />
+
+                </View>
+                <Pressable
+                  android_ripple={{
+                    color: "white",
+                    foreground: true
+                  }}
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    backgroundColor: "#F75270",
+                    padding: 16,
+                  }}>
+                  <View style={{
+                    flexDirection: "column",
+                    gap: 2,
+                  }}>
+                    <Text style={{
+                      fontFamily: "Poppins_600SemiBold",
+                      fontSize: 21,
+                      includeFontPadding: false,
+                      color: "white"
+                    }}>Proceed to pay</Text>
+                    <Text style={{
+                      fontFamily: "Poppins_400Regular",
+                      fontSize: 12,
+                      includeFontPadding: false,
+                      color: "white"
+                    }}>All taxes exlcusive</Text>
+                  </View>
+                  <Text style={{
+                    fontFamily: "Poppins_600SemiBold",
+                    fontSize: 34,
+                    includeFontPadding: false,
+                    color: "white"
+                  }}>${summariesQuantity * 2}</Text>
+                </Pressable>
+              </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </Pressable>
+      )}
     </SafeAreaView>
   );
 }
