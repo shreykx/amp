@@ -43,7 +43,8 @@ export default function LoginPage() {
           throw new Error("No Google ID token returned");
         }
         const user = await signInWithGoogle(idToken)
-
+        
+        await signInWithGoogle(idToken)
         login(user)
       } else {
         console.warn("Sign In was cancelled by the user.")

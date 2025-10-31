@@ -1,25 +1,39 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Tabs, useRouter } from 'expo-router';
 import { useEffect, useRef } from 'react';
+import { ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from '../components/CustomHeader';
 import CustomTabBar from '../components/CustomTabBar';
 import { useUser } from '../contexts/UserContext';
-import { ActivityIndicator } from 'react-native';
-import { getGoogleUserData } from '@/utils/funcs/Session';
 
 export default function TabLayout() {
-  const {user, initialized} = useUser()
+  const { user, profile, initialized } = useUser()
   const router = useRouter()
   const redirecting = useRef(false);
 
   useEffect(() => {
-    if (initialized && !user && !redirecting.current) {
-      redirecting.current = true;      
-      router.replace("/(onboarding)/flow");
-    }
-  }, [initialized, user]);
+    const checkOnboardingStatus = async () => {
+      if (!initialized) return;
+      
+      const hasCompletedOnboarding = await AsyncStorage.getItem("hasUser");
+      // console.log('Onboarding status:', { hasCompletedOnboarding, user, profile });
+      
+      if (user && !profile && hasCompletedOnboarding !== 'true' && !redirecting.current) {
+        console.log('Redirecting to onboarding - user exists but no profile');
+        redirecting.current = true;
+        router.replace("/(onboarding)/flow");
+      } else if (!user && !redirecting.current) {
+        console.log('No user found, redirecting to auth');
+        redirecting.current = true;
+        router.replace("/(auth)/login");
+      }
+    };
+    
+    checkOnboardingStatus();
+  }, [initialized, user, profile]);
 
   if (!initialized || !user) {
     return (

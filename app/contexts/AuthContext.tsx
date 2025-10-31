@@ -28,6 +28,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data: { session } } = await supabase.auth.getSession()
       if (session?.user) {
         setUser(session.user)
+        console.log("Everything set: ", user);
+        
         setIsAuthenticated(true)
       } else {
         setIsAuthenticated(false);
