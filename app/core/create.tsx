@@ -6,6 +6,7 @@ import * as Haptics from 'expo-haptics';
 import CustomHeader from '../components/CustomHeader';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { createQuestion } from '@/utils/funcs/User';
+import { events } from '@/modules/Events';
 export default function Create() {
     const router = useRouter();
     const [inputText, setInputText] = useState('');
@@ -16,6 +17,7 @@ export default function Create() {
         if (inputText.length === 0) return Alert.alert('Error', 'Please enter a question');
         setIsCreateButtonLoading(true);
         await createQuestion(inputText);
+        events.emit('refreshQuestions');
         setIsCreateButtonLoading(false);
         router.back()
     }

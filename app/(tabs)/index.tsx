@@ -3,8 +3,9 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { useAuth } from '../contexts/AuthContext';
 import { StatusBar } from "expo-status-bar";
+import { getQuestions } from '@/utils/funcs/User';
+import { events } from '@/modules/Events';
 
 type Question = {
   id: string;
@@ -19,54 +20,46 @@ type Question = {
 export default function HomePage() {
   // This is where your main app content will go
   // For now, it's just a placeholder
-  const { user, logout } = useAuth();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   // Handling animations
   const translateY = useSharedValue(50)
   const opacity = useSharedValue(0)
-  const animatedQuestionCardStyle = useAnimatedStyle(()=> ({
+  const animatedQuestionCardStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
     opacity: opacity.value
   }))
-  // Simulate data fetching with 2-second delay
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      setIsLoading(true);
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Set the mock data
-      setQuestions([
-        {
-          id: '0',
-          questionText: "What's the best place to visit this summer?",
-          summary: null,
-          numberOfResponses: 12,
-          totalLikes: 2,
-          totalDislikes: 4,
-          authorHandle: 'shreykx',
-        },
-        {
-          id: '1',
-          questionText: "Which season of Stranger Things is your favorite?",
-          summary: "The responses are pretty evenly split between Season 1 and Season 4. Fans of Season 1 love the nostalgia and the tight, focused storyline of the original. Those who prefer Season 4 praise its darker themes, the introduction of Vecna, and the character development, especially for Max and Steve. Seasons 2 and 3 have their fans, but they're not as frequently mentioned as the best.",
-          numberOfResponses: 17,
-          totalLikes: 15,
-          totalDislikes: 2,
-          authorHandle: 'shreykx',
-        }
-      ]);
-      
+  const fetchQuestions = async () => {
+    setIsLoading(true);
+    const { data, error, status } = await getQuestions();
+    if (error || !data) {
+      console.error(error);
       setIsLoading(false);
-      
-      // Trigger slide-up animation when questions are loaded
-      translateY.value = withTiming(0, { duration: 300 });
-      opacity.value = withTiming(1, { duration: 300 });
-    };
+      return;
+    }
+    const formatted = data.map((q: any) => ({
+      id: q.id.toString(),
+      questionText: q.question_text,
+      summary: q.question_summary,
+      numberOfResponses: q.question_impressions,
+      totalLikes: q.question_likes,
+      totalDislikes: q.question_dislikes,
+      authorHandle: q.question_author_uid,
+    }));
+    setQuestions(formatted);
 
+    setIsLoading(false);
+
+    translateY.value = withTiming(0, { duration: 300 });
+    opacity.value = withTiming(1, { duration: 300 });
+  };
+
+  useEffect(() => {
     fetchQuestions();
+  }, []);
+  useEffect(() => {
+    const sub = events.addListener('refreshQuestions', fetchQuestions);
+    return () => sub.remove();
   }, []);
   const renderItem = ({ item }: { item: Question }) => (
     <Animated.View style={[{
@@ -98,7 +91,7 @@ export default function HomePage() {
           justifyContent: 'center',
           alignItems: 'center'
         }}>
-          <MaterialCommunityIcons name="share-outline" size={52} color="black" />
+          <Feather name="share-2" size={32} color="black" />
         </Pressable>
       </View>
       <View style={{
@@ -227,16 +220,16 @@ export default function HomePage() {
     </Animated.View>
   )
   return (
-    <View style={{ flex: 1, backgroundColor: 'white', padding : 7 }}>
+    <View style={{ flex: 1, backgroundColor: 'white', padding: 7 }}>
       {/* User Info Section */}
-      
-      
+
+
       {/* Main (home) screen */}
       {isLoading ? (
-        <View style={{ 
-          flex: 1, 
-          justifyContent: 'center', 
-          alignItems: 'center' 
+        <View style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center'
         }}>
           <ActivityIndicator size="large" color="#F75270" />
         </View>
@@ -249,7 +242,7 @@ export default function HomePage() {
           contentContainerStyle={{ paddingVertical: 10 }}
         />
       )}
-    <StatusBar style="dark" />
+      <StatusBar style="dark" />
     </View>
   );
 }

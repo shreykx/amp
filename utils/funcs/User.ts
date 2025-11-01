@@ -35,7 +35,11 @@ export async function createQuestion(question_text : any) {
 }
 
 export async function getQuestions() {
-
+const { data, error, status } = await supabase
+        .from("questions")
+        .select("*");
+    
+    return { data, error, status };
 }
 
 export async function getQuestionById(id : string) {
