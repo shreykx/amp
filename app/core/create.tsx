@@ -5,12 +5,21 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import CustomHeader from '../components/CustomHeader';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-
+import { createQuestion } from '@/utils/funcs/User';
 export default function Create() {
     const router = useRouter();
     const [inputText, setInputText] = useState('');
     const [isCreateButtonLoading, setIsCreateButtonLoading] = useState<boolean>(false)
-
+    
+    const handleCreate = async () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+        if (inputText.length === 0) return Alert.alert('Error', 'Please enter a question');
+        setIsCreateButtonLoading(true);
+        await createQuestion(inputText);
+        setIsCreateButtonLoading(false);
+        router.back()
+    }
+    
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <CustomHeader showBackButton={true} onBackPress={() => router.back()} showMenuIcon={true} />
@@ -53,15 +62,7 @@ export default function Create() {
                 gap: 2,
             }}>
                 <Pressable
-                    onPress={() => {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
-                        setIsCreateButtonLoading(true)
-                        if (!inputText.trim()) {
-                            Alert.alert("Please enter a question before creating.");
-                            setIsCreateButtonLoading(false)
-                            return;
-                        }
-                    }}
+                    onPress={() => handleCreate()}
                     android_ripple={{
                         foreground: true,
                         color: '#fffff'
